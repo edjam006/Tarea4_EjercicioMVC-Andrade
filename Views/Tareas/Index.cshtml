@@ -1,0 +1,108 @@
+@model IEnumerable<EjercicioMVCAndrade.ViewModels.TareasVM>
+
+@{
+    ViewData["Title"] = "Listado de Tareas";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Registro de Tareas</h2>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            Filtro de Avances
+        </div>
+        <div class="card-body">
+            <form asp-action="FiltrarPorFechas" method="post" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
+                    <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="fechaFin" class="form-label">Fecha de Fin</label>
+                    <input type="date" class="form-control" id="fechaFin" name="fechaFin" required>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-warning w-100">Filtrar (En Progreso)</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table id="tareasTable" class="table table-striped table-hover table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nombre Tarea</th>
+                    <th>Proyecto</th>
+                    <th>Empleado</th>
+                    <th>Fecha Inicio</th>
+                    <th>T. Estimado (hrs)</th>
+                    <th>Estado</th>
+                    <th>Fecha Est. Final</th>
+                    <th>Retraso (Días)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Nombredelatarea</td>
+                        <td>@item.NombreProyecto</td>
+                        <td>@item.NombreEmpleado</td>
+                        <td>@item.FechadeInicio.ToString("dd/MM/yyyy")</td>
+                        <td>@item.tiempoestimado</td>
+                        <td>
+                            @if (item.EstadoProgreso == "Completado")
+                            {
+                                <span class="badge bg-success">@item.EstadoProgreso</span>
+                            }
+                            else if (item.EstadoProgreso == "En Progreso")
+                            {
+                                <span class="badge bg-info text-dark">@item.EstadoProgreso</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@item.EstadoProgreso</span>
+                            }
+                        </td>
+                        <td>
+                            @(item.FechaEstimadaFinal.HasValue ? item.FechaEstimadaFinal.Value.ToString("dd/MM/yyyy") : "-")
+                        </td>
+                        <td>
+                            @if (item.DiasRetraso.HasValue && item.DiasRetraso.Value > 0)
+                            {
+                                <span class="text-danger fw-bold">@item.DiasRetraso.Value días</span>
+                            }
+                            else if (item.DiasRetraso.HasValue && item.DiasRetraso.Value == 0)
+                            {
+                                <span class="text-success">A tiempo</span>
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- jQuery y Datatables CDN -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#tareasTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+                },
+                "pageLength": 10
+            });
+        });
+    </script>
+}

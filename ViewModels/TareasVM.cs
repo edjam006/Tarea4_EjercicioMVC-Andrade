@@ -11,5 +11,7 @@ namespace EjercicioMVCAndrade.ViewModels
         public string EstadoProgreso { get; set; }
         public string NombreProyecto { get; set; }
         public string NombreEmpleado { get; set; }
+        public DateTime? FechaEstimadaFinal { get; set; }
+        public int? DiasRetraso { get; set; }
     }
 }
