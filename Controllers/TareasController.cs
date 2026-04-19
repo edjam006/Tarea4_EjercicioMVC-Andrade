@@ -21,10 +21,13 @@ namespace EjercicioMVCAndrade.Controllers
         // GET: Tareas
         public async Task<IActionResult> Index()
         {
-            var tareas = await _context.Tareas
+            var tareasContext = await _context.Tareas
                 .Include(t => t.Empleado)
                 .Include(t => t.Proyecto)
-                .Select(t => new TareasVM
+                .ToListAsync();
+
+            var tareasVM = tareasContext.Select(t => {
+                var vm = new TareasVM
                 {
                     Id = t.Id,
                     Nombredelatarea = t.Nombredelatarea,
@@ -33,10 +36,15 @@ namespace EjercicioMVCAndrade.Controllers
                     EstadoProgreso = t.EstadoProgreso,
                     NombreProyecto = t.Proyecto.Name,
                     NombreEmpleado = t.Empleado.Name + " " + t.Empleado.LastName
-                })
-                .ToListAsync();
+                };
 
-            return View(tareas);
+                vm.FechaEstimadaFinal = CalcularFechaEstimada(t.FechadeInicio, t.tiempoestimado);
+                vm.DiasRetraso = CalcularDiasRetraso(vm.FechaEstimadaFinal.Value);
+
+                return vm;
+            }).ToList();
+
+            return View(tareasVM);
         }
 
         // POST: Tareas/FiltrarPorFechas
